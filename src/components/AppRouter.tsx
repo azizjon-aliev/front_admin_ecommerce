@@ -10,7 +10,7 @@ export const AppRouter = () => {
     const {isAuth, isLoading} = useContext(AuthContext)
 
     if (isLoading) {
-        return <Loader />
+        return <Loader/>
     }
 
     return (
@@ -18,13 +18,18 @@ export const AppRouter = () => {
             ?
             <Routes>
                 {privateRouter.map(route =>
-                    <Route path={route.path} element={<route.element />}/>
+                    <Route
+                        key={route.path}
+                        path={route.path}
+                        element={<route.element
+                        />
+                        }/>
                 )}
             </Routes>
             :
             <Routes>
                 {publicRouter.map(route =>
-                    <Route path={route.path} element={<route.element />}/>
+                    <Route key={route.path} path={route.path} element={<route.element/>}/>
                 )}
                 <Route path="*" element={<Navigate to={RoutesEnum.Login}/>}/>
             </Routes>

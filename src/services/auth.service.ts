@@ -6,13 +6,13 @@ export class authService
 {
     static async register(data: IRegister)
     {
-        const response = axiosClient.post(RoutesEnum.Login, data)
+        const response = axiosClient.post(RoutesEnum.Register, data)
         return response
     }
 
     static login(data: ILogin)
     {
-        const response = axiosClient.post(RoutesEnum.Register, data)
+        const response = axiosClient.post(RoutesEnum.Login, data)
         return response
     }
 
