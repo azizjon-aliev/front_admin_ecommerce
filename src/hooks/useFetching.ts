@@ -10,12 +10,13 @@ export const useFetching = (callback: any) => {
 
         await callback(...args)
             .then((response: any) => {
-                setData(response)
+                setData(response.data)
                 setErrors({})
             })
             .catch((error: any) => {
-                if (!(error.response.status === 404)) {
-                    setErrors({...error.response.data.errors})
+                console.log(error)
+                if (error?.response?.status === 422) {
+                    setErrors({...error.response?.data?.errors})
                 } else {
                     setErrors({message: error.message})
                 }

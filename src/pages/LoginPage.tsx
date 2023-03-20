@@ -1,14 +1,16 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import {useFetching} from "../hooks/useFetching";
 import {authService} from "../services/auth.service";
 import {ILogin} from "../types/IAuth";
-import {Simulate} from "react-dom/test-utils";
+import {useNavigate} from "react-router-dom";
+import {RoutesEnum} from "../constants/routes";
 
 
 const LoginPage = () => {
     const [user, setUser] = React.useState({email: '', password: ''});
+    const navigation = useNavigate();
 
-    const {fetching, errors, isLoading, data} = useFetching(async (user: ILogin) =>
+    const {fetching: login, errors, isLoading, data} = useFetching(async (user: ILogin) =>
          await authService.login(user)
     );
 
@@ -18,10 +20,9 @@ const LoginPage = () => {
     const handleSubmit = (e: { preventDefault: () => void; }) => {
         e.preventDefault();
 
-        console.log(user);
-        // fetching(user);
-        // console.log(data.data.token);
-
+        login(user);
+        localStorage.setItem('ACCESS_TOKEN', data?.token);
+        navigation(RoutesEnum.Home);
     }
 
     if (isLoading) {
@@ -31,7 +32,7 @@ const LoginPage = () => {
 
     return (
         <div>
-            <form>
+            <form method="post">
                 <h3>Login</h3>
                 <div>
                     <label htmlFor="username">Username</label>
@@ -51,6 +52,7 @@ const LoginPage = () => {
                         type="password"
                         name="password"
                     />
+                    {errors && errors.password && <div>{errors.password}</div>}
                 </div>
                 <button
                     onClick={handleSubmit}
