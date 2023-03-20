@@ -4,5 +4,6 @@ export enum RoutesEnum {
     Register = '/register',
     Logout = '/logout',
     Category = '/categories',
-    Region = '/regions'
+    Region = '/regions',
+    Tag = '/tags',
 }

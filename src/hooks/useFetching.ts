@@ -16,7 +16,7 @@ export const useFetching = (callback: any) => {
             if (e?.response?.status === 422) {
                 setErrors({...e.response?.data?.errors})
             } else {
-                setErrors(e.message)
+                setErrors({message: e.message})
             }
         }
         finally

@@ -9,7 +9,6 @@ const LoginPage: FC = () => {
     const [user, setUser] = React.useState({email: '', password: ''});
 
     const {fetching: login, errors, isLoading} = useFetching(async (user: ILogin) => {
-
         const response = await authService.login(user)
         localStorage.setItem('ACCESS_TOKEN', response?.data?.token);
         window.location.href = RoutesEnum.Home

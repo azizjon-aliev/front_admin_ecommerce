@@ -2,6 +2,7 @@ import HomePage from "../pages/HomePage";
 import LoginPage from "../pages/LoginPage";
 import {RoutesEnum} from "./routes";
 import React from "react";
+import TagPage from "../pages/TagPage";
 
 interface IRouter {
     title: string;
@@ -15,4 +16,6 @@ export const publicRouter: IRouter[] = [
 
 export const privateRouter: IRouter[] = [
     { title: 'Home', path: RoutesEnum.Home, element: HomePage },
+    { title: 'Logout', path: RoutesEnum.Logout, element: HomePage },
+    { title: 'Tags', path: RoutesEnum.Tag, element: TagPage },
 ]
