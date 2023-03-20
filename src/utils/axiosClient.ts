@@ -1,4 +1,5 @@
 import axios from 'axios';
+import {RoutesEnum} from "../constants/routes";
 
 const axiosClient = axios.create({
     baseURL: `${import.meta.env.VITE_API_URL}`,
@@ -16,7 +17,7 @@ axiosClient.interceptors.response.use(response => {
     const {response} = error;
     if (response?.status === 401) {
         localStorage.removeItem('ACCESS_TOKEN')
-        window.location.reload();
+        window.location.href = RoutesEnum.Login
     }
 
     throw error;

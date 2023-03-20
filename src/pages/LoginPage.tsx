@@ -1,31 +1,24 @@
 import React, {FC} from 'react';
 import {authService} from "../services/auth.service";
 import {ILogin} from "../types/IAuth";
-import {useHref, useNavigate} from "react-router-dom";
-import {RoutesEnum} from "../constants/routes";
 import {useFetching} from "../hooks/useFetching";
+import {RoutesEnum} from "../constants/routes";
 
 
 const LoginPage: FC = () => {
     const [user, setUser] = React.useState({email: '', password: ''});
-    const navigation = useNavigate();
-    const href = useHref('/');
 
     const {fetching: login, errors, isLoading} = useFetching(async (user: ILogin) => {
 
         const response = await authService.login(user)
         localStorage.setItem('ACCESS_TOKEN', response?.data?.token);
-
-        // redirect to home page
-        navigation(href)
-
+        window.location.href = RoutesEnum.Home
     });
 
     // izolda51@example.org
 
 
     const handleSubmit = (e: { preventDefault: () => void; }) => {
-
         e.preventDefault();
         login(user)
     }
