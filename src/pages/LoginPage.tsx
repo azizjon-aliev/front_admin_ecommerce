@@ -1,34 +1,38 @@
-import React from 'react';
-import {useFetching} from "../hooks/useFetching";
+import React, {FC} from 'react';
 import {authService} from "../services/auth.service";
 import {ILogin} from "../types/IAuth";
-import {useNavigate} from "react-router-dom";
+import {useHref, useNavigate} from "react-router-dom";
 import {RoutesEnum} from "../constants/routes";
+import {useFetching} from "../hooks/useFetching";
 
 
-const LoginPage = () => {
+const LoginPage: FC = () => {
     const [user, setUser] = React.useState({email: '', password: ''});
     const navigation = useNavigate();
+    const href = useHref('/');
 
-    const {fetching: login, errors, isLoading, data} = useFetching(async (user: ILogin) =>
-         await authService.login(user)
-    );
+    const {fetching: login, errors, isLoading} = useFetching(async (user: ILogin) => {
+
+        const response = await authService.login(user)
+        localStorage.setItem('ACCESS_TOKEN', response?.data?.token);
+
+        // redirect to home page
+        navigation(href)
+
+    });
 
     // izolda51@example.org
 
 
     const handleSubmit = (e: { preventDefault: () => void; }) => {
-        e.preventDefault();
 
-        login(user);
-        localStorage.setItem('ACCESS_TOKEN', data?.token);
-        navigation(RoutesEnum.Home);
+        e.preventDefault();
+        login(user)
     }
 
     if (isLoading) {
         return <h1>Loading...</h1>
     }
-
 
     return (
         <div>
