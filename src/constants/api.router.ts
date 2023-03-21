@@ -1,6 +1,7 @@
 import HomePage from "../pages/HomePage";
-import LoginPage from "../pages/LoginPage";
-import {RoutesEnum} from "./routes";
+import LoginPage from "../pages/Auth/LoginPage";
+import SignUpPage from "../pages/Auth/RegisterPage";
+import { RoutesEnum } from "./routes";
 import React from "react";
 import TagPage from "../pages/TagPage";
 
@@ -11,7 +12,8 @@ interface IRouter {
 }
 
 export const publicRouter: IRouter[] = [
-    { title: 'Login', path: RoutesEnum.Login, element: LoginPage}
+    { title: 'Login', path: RoutesEnum.Login, element: LoginPage},
+    { title: 'Регистрация', path: RoutesEnum.Register, element: SignUpPage},
 ]
 
 export const privateRouter: IRouter[] = [
