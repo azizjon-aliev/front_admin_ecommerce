@@ -1,5 +1,4 @@
-import React from 'react';
-import {ITag} from "../types/ITag";
+import {ITag} from "../../../types/ITag";
 import TagItem from "./TagItem";
 
 interface IProps {

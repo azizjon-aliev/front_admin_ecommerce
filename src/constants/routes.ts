@@ -6,4 +6,10 @@ export enum RoutesEnum {
     Category = '/categories',
     Region = '/regions',
     Tag = '/tags',
+    Example = '/example',
+    Good = '/goods',
+    User = '/users',
+    Place = '/places',
+    Storage = '/storages',
+    Unit = '/units',
 }

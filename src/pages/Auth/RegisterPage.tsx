@@ -1,28 +1,92 @@
-import {
-    Container,
-    Grid,
-    Box,
-    Typography,
-    Stack,
-    FormControlLabel,
-    Checkbox,
-  } from '@mui/material';
-  
-import LoadingButton from '@mui/lab/LoadingButton';
-import { FC } from 'react';
-import { useForm, SubmitHandler, FormProvider } from 'react-hook-form';
-import FormInput from '../../components/UI/Input/FormInput';
-import { IRegister} from '../../types/IAuth';
-import { LinkItem } from '../../components/UI/Elements/MainElements';
-import { useFetching } from '../../hooks/useFetching';
-import { authService } from '../../services/auth.service';
-import { ErrorItem } from '../../components/UI/Elements/MainElements';
+// ** React Imports
+import { ChangeEvent, MouseEvent, ReactNode, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+
+// ** MUI Components
+import {Box}from "@mui/material";
+import Checkbox from '@mui/material/Checkbox'
+import TextField from '@mui/material/TextField'
+import InputLabel from '@mui/material/InputLabel'
+import Typography from '@mui/material/Typography'
+import IconButton from '@mui/material/IconButton'
+import CardContent from '@mui/material/CardContent'
+import FormControl from '@mui/material/FormControl'
+import OutlinedInput from '@mui/material/OutlinedInput'
+import { LoadingButton } from '@mui/lab';
+import { styled } from '@mui/material/styles'
+import MuiCard, { CardProps } from '@mui/material/Card'
+import InputAdornment from '@mui/material/InputAdornment'
+import MuiFormControlLabel, { FormControlLabelProps } from '@mui/material/FormControlLabel'
+
+// ** Icons Imports
+import EyeOutline from 'mdi-material-ui/EyeOutline'
+import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
+
+// ** Configs
+// import themeConfig from '../../configs/themeConfig'
+
+// ** Layout Import
+import BlankLayout from '../../components/UI/@core/layouts/BlankLayout'
+
+// ** Demo Imports
+// import FooterIllustrationsV1 from '../../components/UI/FooterIllustrations/FooterIllustration'
 import { RoutesEnum } from '../../constants/routes';
 
+// ** Types
+import { IRegister } from '../../types/IAuth';
+import { useFetching } from '../../hooks/useFetching';
+import { authService } from '../../services/auth.service';
 
-// 👇 Компонент страницы входа в систему 
-const SignUpPage: FC = () => {
-  
+
+
+
+interface State {
+  email: string
+  password: string
+  password_confirmation: string
+  remember_me: boolean
+}
+
+// ** Styled Components
+const Card = styled(MuiCard)<CardProps>(({ theme }) => ({
+  [theme.breakpoints.up('sm')]: { width: '28rem' }
+}))
+
+const FormControlLabel = styled(MuiFormControlLabel)<FormControlLabelProps>(({ theme }) => ({
+  '& .MuiFormControlLabel-label': {
+    fontSize: '0.875rem',
+    color: theme.palette.text.secondary
+  }
+}))
+
+const RegisterPage = () => {
+
+  const [showPassword, setShowPassword] = useState(false)
+
+  // ** State
+  const [values, setValues] = useState<State>({
+      email: '',
+      password: '',
+      password_confirmation: '',
+      remember_me: false
+  })
+
+  // ** Hook  
+  // const navigate = useNavigate()
+
+  const handleChange = (prop: keyof State) => (event: ChangeEvent<HTMLInputElement>) => {
+    setValues({ ...values, [prop]: event.target.value })
+  }
+
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword)
+  }
+
+  const handleMouseDownPassword = (event: MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault()
+  }
+
     // 👇 Кастомный хук для отправки запроса на сервер
     const {fetching: register, errors, isLoading} = useFetching(async (user: IRegister) => {
       const response = await authService.register(user)
@@ -32,209 +96,118 @@ const SignUpPage: FC = () => {
     });
       
     // 👇 Обработчик сабмита формы
-    const onSubmitHandler: SubmitHandler<IRegister> = (values: IRegister) => {
-        // // 👇 Проверка на валидность формы
-        register(values);
-
+    const handleRegister = () => {
+        //  👇 Проверка на валидность формы
+        register(values); 
+        console.log(errors)
         console.log(values);
 
       }
 
-    // 👇 Хук для работы с формой
-  const methods = useForm<IRegister>({
-      defaultValues: {
-        email: '',
-        password: '',
-        password_confirmation: '',
-        remember_me: false,
-      },
-  });
-
-  // 👇 Возвращаем разметку страницы
   return (
-    <Container
-        maxWidth={false}
-        sx={{ height: '100vh', backgroundColor: { xs: '#fff', md: '#f4f4f4' } }}
-      >
-        <Grid
-          container
-          justifyContent='center'
-          alignItems='center'
-          sx={{ width: '100%', height: '100%' }}
-        >
-          <Grid
-            item
-            sx={{ width: '100%', backgroundColor: '#fff', height: '100%' }}
-          >
-          <FormProvider {...methods}>
-            <Grid
-              container
-              sx={{
-                boxShadow: { sm: '0 0 5px #ddd' },
-                py: '6rem',
-                px: '1rem',
-              }}
+    <Box className='content-center'>
+      <Card sx={{ zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+        <CardContent sx={{ padding: theme => `${theme.spacing(5, 8, 7)} !important` }}>
+          <Box sx={{ mb: 6 }}>
+          <Typography variant='h5' sx={{ fontWeight: 600, marginBottom: 1.5 }}>
+            Регистрация 🚀
+          </Typography>
+            <Typography variant='body2'>
+              Зарегистрируйтесь, чтобы получить доступ к панели управления
+            </Typography>
+          </Box>
+          <form noValidate autoComplete='off' onSubmit={e => e.preventDefault()}>
+            <TextField autoFocus fullWidth id='email' label='Email' sx={{ marginBottom: 4 }}
+              value={values.email}
+              onChange={handleChange('email')}
+            />
+            <FormControl fullWidth>
+              <InputLabel htmlFor='auth-register-password'>
+                Пароль
+              </InputLabel>
+              <OutlinedInput
+                label='
+                Пароль'
+                value={values.password}
+                id='auth-register-password'
+                onChange={handleChange('password')}
+                type={showPassword ? 'text' : 'password'}
+                endAdornment={
+                  <InputAdornment position='end'>
+                    <IconButton
+                      edge='end'
+                      onClick={handleClickShowPassword}
+                      onMouseDown={handleMouseDownPassword}
+                      aria-label='toggle password visibility'
+                    >
+                      {showPassword ? <EyeOutline /> : <EyeOffOutline />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+              />
+            </FormControl>
+
+              <FormControl fullWidth sx={{ marginTop: 3, marginBottom: 2 }}>
+                  <InputLabel htmlFor='auth-register-password_confirmation' 
+                    sx={{ marginTop: 0 }}>
+                      Подтвердите пароль
+                  </InputLabel>
+                  <OutlinedInput
+                      label='Password Confirmation'
+                      value={values.password_confirmation}
+                      id='auth-register-password_confirmation'
+                      onChange={handleChange('password_confirmation')}
+                      type={showPassword ? 'text' : 'password'}
+                      endAdornment={<InputAdornment position='end'>
+                  <IconButton
+                      edge='end'
+                      onClick={handleClickShowPassword}
+                      onMouseDown={handleMouseDownPassword}
+                      aria-label='toggle password visibility'
+                    >
+                      {showPassword ? <EyeOutline /> : <EyeOffOutline />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+              />
+            </FormControl>
+                            
+            <Box
+              sx={{ mb: 4, display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'space-between' }}
             >
-              <Grid
-                item
-                container
-                justifyContent='space-between'
-                rowSpacing={5}
-                sx={{
-                  maxWidth: { lg: '75rem' },
-                  marginInline: 'auto',
-                }}
-              >
-                <Box
-                  display='flex'
-                  flexDirection='column'
-                  component='form'
-                  noValidate
-                  autoComplete='off'
-                  sx={{ margin: 'auto' }}
-                  onSubmit={methods.handleSubmit(onSubmitHandler)}
-                >
+              <FormControlLabel control={<Checkbox />} label='
+              Запомнить меня
+              ' />
+            </Box>
+            <LoadingButton
+              fullWidth
+              size='large'
+              type='submit'
+              loading={isLoading}
+              variant='contained'
+              sx={{ marginBottom: 7 }}
+              onClick={() => handleRegister()}
+            >
+              Регистрация
+            </LoadingButton>
+            <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
+              <Typography variant='body2' sx={{ marginRight: 2 }}>
+                Уже есть аккаунт?
+              </Typography>
+              <Typography variant='body2'>
+                <Link to={RoutesEnum.Login} className={'link'}>
+                  Войти в аккаунт
+                </Link>
+              </Typography>
+            </Box>
+          </form>
+        </CardContent>
+      </Card>
+      {/* <FooterIllustrationsV1 /> */}
+    </Box>
+  )
+}
 
-                    <Typography
-                      variant='h6'
-                      component='h1'
-                      sx={{ textAlign: 'center', mb: '1.5rem' }}
-                    >
-                        Регистрация
-                    </Typography>
+RegisterPage.getLayout = (page: ReactNode) => <BlankLayout>{page}</BlankLayout>
 
-                    {/* <FormInput
-                        label='Имя'
-                        type='text'
-                        name='name'
-                        focused
-                        autoFocus
-                        required
-                        sx={{ height: '3.5rem' }} // set a fixed height for the input field
-                    />
-                    
-                    {errors &&
-                        errors.name &&
-                            <ErrorItem>
-                                {errors.name}
-                            </ErrorItem>
-                    } */}
-
-                    <FormInput
-                          label='Электронная почта'
-                          type='email'
-                          name='email'
-                          focused
-                          required
-                          sx={{ height: '3.5rem' }} // set a fixed height for the input field
-                        />
-
-                      {errors &&
-                          errors.email &&
-                              <ErrorItem>  
-                                  {errors.email}
-                              </ErrorItem>
-                      }
-
-                    <FormInput
-                      type='password'
-                      label='Пароль'
-                      name='password'
-                      required
-                      focused
-                      sx={{ height: '3.5rem'}} // set a fixed height for the input field
-                    />
-
-                    {errors &&
-                        errors.password &&
-                            <ErrorItem>
-                                {errors.password}
-                            </ErrorItem>
-                    }
-
-                    <FormInput
-                        type='password'
-                        label='Подтвердите пароль'
-                        name='password_confirmation'
-                        required
-                        focused
-                        sx={{ height: '3.5rem'}} // set a fixed height for the input field
-                    />
-
-                    {errors &&
-                        errors.password_confirmation &&
-                            <ErrorItem>
-                                {errors.password_confirmation}
-                            </ErrorItem>
-                    }
-
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          size='small'
-                          aria-label='trust this device checkbox'
-                          required
-                          {...methods.register('remember_me')}
-                          sx={{
-                            color: '#5e5b5d',
-                            '&.Mui-checked': {
-                              color: '#5e5b5d',
-                            },
-                          }}  
-                        />
-                      }
-                      label={
-                        <Typography
-                          variant='body2'
-                          sx={{
-                            fontSize: '0.8rem',
-                            fontWeight: 400,
-                            color: '#5e5b5d',
-                          }}
-                        >
-                          Запомнить меня
-                        </Typography>
-                      }
-                    />
-
-                    <LoadingButton
-                      loading={isLoading}
-                      type='submit'
-                      variant='contained'
-                      sx={{
-                        py: '0.8rem',
-                        mt: 2,
-                        width: '80%',
-                        marginInline: 'auto',
-                      }}
-                    >
-                        Зарегистрироваться
-                    </LoadingButton>
-                  </Box>
-              </Grid>
-              <Grid container justifyContent='center'>
-                <Stack sx={{ mt: '3rem', textAlign: 'center' }}>
-                  <Typography sx={{ fontSize: '0.9rem', mb: '1rem' }}>
-                      Уже есть аккаунт
-                      ?{' '}
-                    <LinkItem to={RoutesEnum.Login}>
-                        Войти
-                    </LinkItem>
-                  </Typography>
-                  <Typography sx={{ fontSize: '0.9rem' }}>
-                      Забыли 
-                    {' '}
-                    <LinkItem to={RoutesEnum.Register}>пароль
-                      ?</LinkItem>
-                  </Typography>
-                </Stack>
-              </Grid>
-            </Grid>
-          </FormProvider>
-        </Grid>
-      </Grid>
-    </Container>
-  );
-};
-
-export default SignUpPage;
+export default RegisterPage;

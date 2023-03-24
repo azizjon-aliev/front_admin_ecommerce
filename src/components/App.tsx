@@ -1,14 +1,28 @@
-import { useState } from 'react'
-import reactLogo from '../assets/react.svg'
-import viteLogo from '/vite.svg'
 import {AppRouter} from "./AppRouter";
 import Navigation from "./Navigation";
 
+
+
 function App() {
+  // const {isAuth, isLoading} = useContext(AuthContext)
+  
   return (
     <>
-        <Navigation />
+      <div 
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          height: '100vh',
+          width: '100vw',
+          boxShadow: '0 0 10px 0 rgba(0, 0, 0, 0.1)',
+        }}
+      >
+
+        <Navigation
+            />
         <AppRouter />
+      </div>
     </>
   )
 }

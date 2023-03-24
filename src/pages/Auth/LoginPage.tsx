@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom';
 
 // ** MUI Components
 import {Box}from "@mui/material";
-import Button from '@mui/material/Button'
 import Checkbox from '@mui/material/Checkbox'
 import TextField from '@mui/material/TextField'
 import InputLabel from '@mui/material/InputLabel'
@@ -14,6 +13,7 @@ import IconButton from '@mui/material/IconButton'
 import CardContent from '@mui/material/CardContent'
 import FormControl from '@mui/material/FormControl'
 import OutlinedInput from '@mui/material/OutlinedInput'
+import { LoadingButton } from '@mui/lab';
 import { styled } from '@mui/material/styles'
 import MuiCard, { CardProps } from '@mui/material/Card'
 import InputAdornment from '@mui/material/InputAdornment'
@@ -27,14 +27,13 @@ import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 import themeConfig from '../../configs/themeConfig'
 
 // ** Layout Import
-import BlankLayout from '../../@core/layouts/BlankLayout'
+import BlankLayout from '../../components/UI/@core/layouts/BlankLayout'
 
 // ** Demo Imports
-import FooterIllustrationsV1 from '../../components/UI/FooterIllustrations/FooterIllustration'
+// import FooterIllustrationsV1 from '../../components/UI/FooterIllustrations/FooterIllustration'
 import { RoutesEnum } from '../../constants/routes';
 
 // ** Types
-import { SubmitHandler } from 'react-hook-form';
 import { ILogin } from '../../types/IAuth';
 import { useFetching } from '../../hooks/useFetching';
 import { authService } from '../../services/auth.service';
@@ -42,19 +41,14 @@ import { authService } from '../../services/auth.service';
 
 
 interface State {
+  email: string
   password: string
-  showPassword: boolean
+  remember_me: boolean
 }
 
 // ** Styled Components
 const Card = styled(MuiCard)<CardProps>(({ theme }) => ({
   [theme.breakpoints.up('sm')]: { width: '28rem' }
-}))
-
-const LinkStyled = styled('a')(({ theme }) => ({
-  fontSize: '0.875rem',
-  textDecoration: 'none',
-  color: theme.palette.primary.main
 }))
 
 const FormControlLabel = styled(MuiFormControlLabel)<FormControlLabelProps>(({ theme }) => ({
@@ -66,10 +60,13 @@ const FormControlLabel = styled(MuiFormControlLabel)<FormControlLabelProps>(({ t
 
 const LoginPage = () => {
 
+  const [showPassword, setShowPassword] = useState(false)
+
   // ** State
   const [values, setValues] = useState<State>({
-    password: '',
-    showPassword: false
+      email: '',
+      password: '',
+      remember_me: false
   })
 
   // ** Hook  
@@ -80,7 +77,7 @@ const LoginPage = () => {
   }
 
   const handleClickShowPassword = () => {
-    setValues({ ...values, showPassword: !values.showPassword })
+    setShowPassword(!showPassword)
   }
 
   const handleMouseDownPassword = (event: MouseEvent<HTMLButtonElement>) => {
@@ -96,21 +93,25 @@ const LoginPage = () => {
     });
       
     // 👇 Обработчик сабмита формы
-    const handleLogin: SubmitHandler<ILogin> = () => {
+    const handleLogin = () => {
         //  👇 Проверка на валидность формы
         login(values);
-
+        console.log(errors)
         console.log(values);
 
       }
 
   return (
     <Box className='content-center'>
-      <Card sx={{ zIndex: 1 }}>
-        <CardContent sx={{ padding: theme => `${theme.spacing(12, 9, 7)} !important` }}>
-          <Box sx={{ mb: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <Card sx={{ zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+        <CardContent sx={{ padding: theme => `${theme.spacing(5, 8, 7)} !important` }}>
+        <Box sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
 
-            <Typography
+            {/* <Typography
               variant='h6'
               sx={{
                 ml: 3,
@@ -122,23 +123,31 @@ const LoginPage = () => {
             >
               {themeConfig.templateName}
             </Typography>
+             */}
           </Box>
           <Box sx={{ mb: 6 }}>
             <Typography variant='h5' sx={{ fontWeight: 600, marginBottom: 1.5 }}>
-              Welcome to {themeConfig.templateName}! 👋🏻
+              Добро пожаловать в {themeConfig.templateName}! 👋🏻
             </Typography>
-            <Typography variant='body2'>Please sign-in to your account and start the adventure</Typography>
+            <Typography variant='body2'>
+              Войдите в свой аккаунт чтобы продолжить работу
+            </Typography>
           </Box>
           <form noValidate autoComplete='off' onSubmit={e => e.preventDefault()}>
-            <TextField autoFocus fullWidth id='email' label='Email' sx={{ marginBottom: 4 }} />
+            <TextField autoFocus fullWidth id='email' label='Эл.почта' sx={{ marginBottom: 4 }}
+              value={values.email}
+              onChange={handleChange('email')}
+            />
             <FormControl fullWidth>
-              <InputLabel htmlFor='auth-login-password'>Password</InputLabel>
+              <InputLabel htmlFor='auth-login-password'>
+                Пароль
+              </InputLabel>
               <OutlinedInput
                 label='Password'
                 value={values.password}
                 id='auth-login-password'
                 onChange={handleChange('password')}
-                type={values.showPassword ? 'text' : 'password'}
+                type={showPassword ? 'text' : 'password'}
                 endAdornment={
                   <InputAdornment position='end'>
                     <IconButton
@@ -147,7 +156,7 @@ const LoginPage = () => {
                       onMouseDown={handleMouseDownPassword}
                       aria-label='toggle password visibility'
                     >
-                      {values.showPassword ? <EyeOutline /> : <EyeOffOutline />}
+                      {showPassword ? <EyeOutline /> : <EyeOffOutline />}
                     </IconButton>
                   </InputAdornment>
                 }
@@ -156,34 +165,35 @@ const LoginPage = () => {
             <Box
               sx={{ mb: 4, display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'space-between' }}
             >
-              <FormControlLabel control={<Checkbox />} label='Remember Me' />
-              <Link to={RoutesEnum.Home}>
-                <LinkStyled onClick={e => e.preventDefault()}>Forgot Password?</LinkStyled>
-              </Link>
+              <FormControlLabel control={<Checkbox />} label='
+                Запомнить меня
+              ' />
             </Box>
-            <Button
+            <LoadingButton
               fullWidth
               size='large'
+              type='submit'
+              loading={isLoading}
               variant='contained'
               sx={{ marginBottom: 7 }}
               onClick={() => handleLogin()}
             >
-              Login
-            </Button>
+              Вход
+            </LoadingButton>
             <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
               <Typography variant='body2' sx={{ marginRight: 2 }}>
-                New on our platform?
+                Нет аккаунта?
               </Typography>
               <Typography variant='body2'>
-                <Link to={RoutesEnum.Register}>
-                  <LinkStyled>Create an account</LinkStyled>
+                <Link to={RoutesEnum.Register} className={'link'}>
+                    Зарегистрироваться
                 </Link>
               </Typography>
             </Box>
           </form>
         </CardContent>
       </Card>
-      <FooterIllustrationsV1 />
+      {/* <FooterIllustrationsV1 /> */}
     </Box>
   )
 }

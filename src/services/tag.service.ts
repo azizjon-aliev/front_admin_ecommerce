@@ -9,7 +9,7 @@ export class tagService
             params: {
                 limit: limit,
                 page: page,
-                search: search,
+                search: search ? search : undefined,
             }
         })
         return response

@@ -1,0 +1,4 @@
+export interface IStorage {
+    id?: number;
+    name: string;
+}
