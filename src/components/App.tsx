@@ -1,5 +1,6 @@
 import {AppRouter} from "./AppRouter";
 import Navigation from "./Navigation";
+import React, {useMemo} from "react";
 
 
 
@@ -19,8 +20,7 @@ function App() {
         }}
       >
 
-        <Navigation
-            />
+        <Navigation/>
         <AppRouter />
       </div>
     </>

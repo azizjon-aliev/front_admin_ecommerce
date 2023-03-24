@@ -7,7 +7,7 @@ import {getPageCount} from "../../utils/pages";
 import Pagination from "../../components/UI/Pagination/Pagination";
 import useDebounce from "../../hooks/useDebounce";
 import useCrud from "../../hooks/useCrud";
-import ExamplePage, { TablePaginationActions } from '../../components/UI/Tables/TableStickyHeader';
+import ExamplePage from '../../components/UI/Tables/TableStickyHeader';
 import { Input } from '@mui/material';
 import { Box } from 'mdi-material-ui';
 
@@ -71,7 +71,9 @@ const TagPage = () => {
                 [
                     { id: 'name', name: 'Name' },
                 ]
-            } data={tags} />
+            } data={tags} 
+            service={tagService}
+            />
 
         </div>
     );

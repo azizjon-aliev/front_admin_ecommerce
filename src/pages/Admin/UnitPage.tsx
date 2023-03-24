@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {useFetching} from "../../hooks/useFetching";
 import useDebounce from "../../hooks/useDebounce";
-import ExamplePage, { TablePaginationActions } from '../../components/UI/Tables/TableStickyHeader';
+import ExamplePage from '../../components/UI/Tables/TableStickyHeader';
 import { Input } from '@mui/material';
 import { unitService } from '../../services/unit.service';
 
@@ -65,7 +65,9 @@ const UnitPage = () => {
                 [
                     { id: 'name', name: 'Name' },
                 ]
-            } data={tags} />
+            } data={tags} 
+            service={unitService}
+            />
 
         </div>
     );

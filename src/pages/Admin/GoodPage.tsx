@@ -65,7 +65,10 @@ const GoodPage = () => {
                 [
                     { id: 'name', name: 'Name' },
                 ]
-            } data={tags} />
+            } 
+            data={tags}
+            service={goodService} 
+            />
 
         </div>
     );

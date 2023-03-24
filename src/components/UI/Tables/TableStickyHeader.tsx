@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import * as React from 'react';
 import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -16,10 +17,10 @@ import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PreviewIcon from '@mui/icons-material/Preview';
-import ToggleOnIcon from '@mui/icons-material/ToggleOn';
-import ToggleOffIcon from '@mui/icons-material/ToggleOff';
 import EditIcon from '@mui/icons-material/Edit';
 import { TableHead } from '@mui/material';
+
+import EditForm from '../Modals/EditForm.jsx';
 
 interface TablePaginationActionsProps {
   count: number;
@@ -37,7 +38,7 @@ interface Header {
 
 interface Data {
   data: Array<any>;
-  id?: number;
+  id: number;
   name?: string;
   title?: string;
   first_name?: string;
@@ -48,9 +49,10 @@ interface Data {
 interface ExamplePageProps {
   headers: Array<Header>;
   data: Array<Data>;
+  service: any;
 }
 
-export function TablePaginationActions(props: TablePaginationActionsProps,
+function TablePaginationActions(props: TablePaginationActionsProps,
   ) {
   const theme = useTheme();
   const { count, page, rowsPerPage, onPageChange } = props;
@@ -107,16 +109,20 @@ export function TablePaginationActions(props: TablePaginationActionsProps,
   );
 }
 
-const rows = [
-  ...Array(100)
-    .fill(null)
-]
+
 
 export default function ExamplePage(props: ExamplePageProps) {
   const { headers, data } = props;
+  // Define a state variable to control whether the EditForm component should be displayed
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [selectedDataId, setSelectedDataId] = useState(0);
+
+  // Define event handlers to show/hide the EditForm component
+  const handleOpen = () => setShowEditForm(true);
+  const handleClose = () => setShowEditForm(false);
   
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
   
   const handleChangePage = (
     event: React.MouseEvent<HTMLButtonElement> | null,
@@ -124,6 +130,7 @@ export default function ExamplePage(props: ExamplePageProps) {
   ) => {
     setPage(newPage);
   };
+
 
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -135,6 +142,7 @@ export default function ExamplePage(props: ExamplePageProps) {
   return (
     <Box className="table-wrapper">
    <TableContainer component={Paper} className='table-container'>
+
       <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
         <TableHead className="table-header">
             <TableRow className='table-header'>
@@ -151,17 +159,25 @@ export default function ExamplePage(props: ExamplePageProps) {
             </TableRow>
           </TableHead>
         <TableBody>
-         {data ? data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
+
+         {data ? 
+            data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
             <TableRow 
               key={row?.id} 
               className='table-row'>
               <TableCell scope="row">
-                {row?.name || row?.title || row?.first_name + " " + row?.last_name || "-" }
+                {row?.name || row?.title || (row?.first_name ?? "-") + " " + (row?.last_name ?? "-")}
               </TableCell>
               <TableCell
                 key="actions">
                 <IconButton>
-                  <EditIcon />  
+                  <EditIcon 
+                    onClick={() => {
+                      setSelectedDataId(row?.id);
+                      handleOpen();
+                    }
+                    }
+                  />  
                 </IconButton>
                 <IconButton>
                   <DeleteIcon />
@@ -171,24 +187,31 @@ export default function ExamplePage(props: ExamplePageProps) {
                 </IconButton>
               </TableCell>
             </TableRow>
-          )) :
+          )) 
+          :
           <TableRow>
             <TableCell>
               No data
             </TableCell>
           </TableRow>
-
           }
 
-          
+          {showEditForm && (
+              <EditForm
+                show={showEditForm}
+                handleClose={handleClose}
+                dataId={selectedDataId}
+                service={props.service}
+              />
+          )}
 
           </TableBody>
         <TableFooter>
           <TableRow>
             <TablePagination
-              rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+              rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1}]}
               colSpan={3}
-              count={rows.length}
+              count={data.length}
               rowsPerPage={rowsPerPage}
               page={page}
               SelectProps={{

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, {memo} from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -11,26 +11,14 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
+import Typography from '@mui/material/Typography'
 
-// importing icons for menu items
-import HomeIcon from '@mui/icons-material/Home';
-import LogoutIcon from '@mui/icons-material/Logout';
-import CategoryIcon from '@mui/icons-material/Category';
-import RegionIcon from '@mui/icons-material/LocationOn';
-import TagIcon from '@mui/icons-material/LocalOffer';
-import PinDropIcon from '@mui/icons-material/PinDrop';
-import GoodIcon from '@mui/icons-material/ShoppingCart';
-import UserIcon from '@mui/icons-material/People';
-import PlaceIcon from '@mui/icons-material/Place';
-import StorageIcon from '@mui/icons-material/Storage';
-import UnitIcon from '@mui/icons-material/FormatListNumbered';
-import { Routes } from 'react-router-dom';
-import { RoutesEnum } from '../constants/routes';
+import { privateRouter } from '../constants/api.router';
+import { Link } from 'react-router-dom';
 
 const drawerWidth = 240;
 
-export default function ResponsiveDrawer() {
+const ResponsiveDrawer = () => {
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
   const handleDrawerToggle = () => {
@@ -40,69 +28,19 @@ export default function ResponsiveDrawer() {
   const drawer = (
     <div>
         <Toolbar />
-      <List>
-        <ListItemButton component="a" href="/" key="Home">
-          <ListItemIcon>
-            <HomeIcon />
-          </ListItemIcon>
-          <ListItemText primary="Home" />
-        </ListItemButton>
-        <ListItemButton component="a" href={RoutesEnum.Category} key="Category">
-          <ListItemIcon>
-            <CategoryIcon />
-          </ListItemIcon>
-          <ListItemText primary="Category" />
-        </ListItemButton>
-        <ListItemButton component="a" href={RoutesEnum.Region} key="Region">
-          <ListItemIcon>
-            <RegionIcon />
-          </ListItemIcon>
-          <ListItemText primary="Region" />
-        </ListItemButton>
-        <ListItemButton component="a" href={RoutesEnum.Tag} key="Tag">
-          <ListItemIcon>
-            <TagIcon />
-          </ListItemIcon>
-          <ListItemText primary="Tag" />
-        </ListItemButton>
-        <ListItemButton component="a" href={RoutesEnum.Good} key="Good">
-          <ListItemIcon>
-            <GoodIcon />
-          </ListItemIcon>
-          <ListItemText primary="Good" />
-        </ListItemButton>
-        <ListItemButton component="a" href={RoutesEnum.User} key="User">
-          <ListItemIcon>
-            <UserIcon />
-          </ListItemIcon>
-          <ListItemText primary="User" />
-        </ListItemButton>
-        <ListItemButton component="a" href={RoutesEnum.Place} key="Place">
-          <ListItemIcon>  
-            <PinDropIcon />
-          </ListItemIcon>
-          <ListItemText primary="Place" />
-        </ListItemButton>
-        <ListItemButton component="a" href={RoutesEnum.Storage} key="Storage">
-          <ListItemIcon>
-            <StorageIcon />
-          </ListItemIcon>
-          <ListItemText primary="Storage" />
-        </ListItemButton>
-        <ListItemButton component="a" href={RoutesEnum.Unit} key="Unit">
-          <ListItemIcon>
-            <UnitIcon />
-          </ListItemIcon>
-          <ListItemText primary="Unit" />
-        </ListItemButton>
-      </List>
-      <Divider />
-        <ListItemButton component="a" href={RoutesEnum.Logout} key="Logout">
-          <ListItemIcon>
-            <LogoutIcon />
-          </ListItemIcon>
-          <ListItemText primary="Logout" />
-        </ListItemButton>
+        <Divider />
+        <List>
+          {privateRouter.map((route) => (
+            <ListItemButton key={route.path} href={route.path}>
+              <ListItemIcon>
+                <route.icon />
+              </ListItemIcon>
+              <ListItemText primary={route.title} />
+            </ListItemButton>
+          ))}
+        </List>
+
+        <Divider />
     </div>
   );
 
@@ -170,3 +108,5 @@ export default function ResponsiveDrawer() {
 
   );
 }  
+
+export default memo(ResponsiveDrawer);

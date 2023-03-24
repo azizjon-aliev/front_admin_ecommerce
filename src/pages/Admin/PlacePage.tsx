@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {useFetching} from "../../hooks/useFetching";
 import useDebounce from "../../hooks/useDebounce";
-import ExamplePage, { TablePaginationActions } from '../../components/UI/Tables/TableStickyHeader';
+import ExamplePage from '../../components/UI/Tables/TableStickyHeader';
 import { Input } from '@mui/material';
 import { placeService } from '../../services/place.service';
 
@@ -65,7 +65,9 @@ const PlacePage = () => {
                 [
                     { id: 'name', name: 'Name' },
                 ]
-            } data={tags} />
+            } data={tags} 
+            service={placeService}
+            />
 
         </div>
     );

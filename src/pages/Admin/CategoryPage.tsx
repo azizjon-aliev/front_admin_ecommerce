@@ -1,41 +1,28 @@
-import React, {useEffect, useState} from 'react';
-import {ITag} from "../../types/ITag";
-import TagList from "../../components/Admin/Tags/TagList";
+import {useEffect, useState} from 'react';
 import {useFetching} from "../../hooks/useFetching";
-import {getPageCount} from "../../utils/pages";
-import Pagination from "../../components/UI/Pagination/Pagination";
 import useDebounce from "../../hooks/useDebounce";
-import useCrud from "../../hooks/useCrud";
-import ExamplePage, { TablePaginationActions } from '../../components/UI/Tables/TableStickyHeader';
+import ExamplePage from '../../components/UI/Tables/TableStickyHeader';
 import { Input } from '@mui/material';
-import { Box } from 'mdi-material-ui';
 import { categoryService } from '../../services/category.service';
+import { RoutesEnum } from '../../constants/routes';
 
 const CategoryPage = () => {
-    const [tags, setTags] = useState<[]>([]);
+    const [catogories, setCatogories] = useState<[]>([]);
     const [limit, setLimit] = useState<number>(100);
-    const [page, setPage] = useState<number>(1);
-    const [total, setTotal] = useState<number>(0);
     const [search, setSearch] = useState<string>('');
     const debouncedSearch = useDebounce(search, 500);
 
     const {isLoading, errors, fetching: getAll} = useFetching(async (limit: number, page: number, search: string) => {
         const response = await categoryService.getAll(limit, page, search);
-        setTotal(response.data?.meta.total)
-        setTags(response.data.data);
-    })
-    // const {isLoading, errors, data, getAll} = useCrud({service: tagService})
+        setCatogories(response.data.data);
+    });
 
 
     useEffect(() => {
-        const data = getAll(limit, page, search);
-        // console.log('data', data)
+        const data = getAll(limit, search);
         // @ts-ignore
-        setTags(data)
-    }, [limit, page, debouncedSearch]);
-
-
-    console.log(tags)
+        setCatogories(data)
+    }, [limit, debouncedSearch]);
 
     if (isLoading) return <h1>Loading...</h1>
 
@@ -58,8 +45,8 @@ const CategoryPage = () => {
                     }}
                 
             >
-                <Input
 
+                <Input
                     type="search"
                     placeholder="Search..."
                     value={search}
@@ -71,7 +58,9 @@ const CategoryPage = () => {
                 [
                     { id: 'name', name: 'Name' },
                 ]
-            } data={tags} />
+            } data={catogories}
+            service={categoryService} 
+            />
 
         </div>
     );

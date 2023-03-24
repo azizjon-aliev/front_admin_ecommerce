@@ -8,10 +8,27 @@ export class storageService
         const response = axiosClient.get(RoutesEnum.Storage, {
             params: {
                 limit: limit,
-                page: page,
                 search: search ? search : undefined,
             }
         })
+        return response
+    }
+
+    static async create(data: any)
+    {
+        const response = axiosClient.post(RoutesEnum.Storage, data)
+        return response
+    }
+
+    static async update(id: number, data: any)
+    {
+        const response = axiosClient.put(RoutesEnum.Storage + "/" + id, data)
+        return response
+    }
+
+    static async delete(id: number)
+    {
+        const response = axiosClient.delete(RoutesEnum.Storage + "/" + id)
         return response
     }
 }
