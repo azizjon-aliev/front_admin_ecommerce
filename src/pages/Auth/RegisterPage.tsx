@@ -39,15 +39,6 @@ import { useFetching } from '../../hooks/useFetching';
 import { authService } from '../../services/auth.service';
 
 
-
-
-interface State {
-  email: string
-  password: string
-  password_confirmation: string
-  remember_me: boolean
-}
-
 // ** Styled Components
 const Card = styled(MuiCard)<CardProps>(({ theme }) => ({
   [theme.breakpoints.up('sm')]: { width: '28rem' }
@@ -65,7 +56,7 @@ const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false)
 
   // ** State
-  const [values, setValues] = useState<State>({
+  const [values, setValues] = useState<IRegister>({
       email: '',
       password: '',
       password_confirmation: '',
@@ -73,9 +64,9 @@ const RegisterPage = () => {
   })
 
   // ** Hook  
-  // const navigate = useNavigate()
+  const navigate = useNavigate()
 
-  const handleChange = (prop: keyof State) => (event: ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (prop: keyof IRegister) => (event: ChangeEvent<HTMLInputElement>) => {
     setValues({ ...values, [prop]: event.target.value })
   }
 
@@ -91,7 +82,7 @@ const RegisterPage = () => {
     const {fetching: register, errors, isLoading} = useFetching(async (user: IRegister) => {
       const response = await authService.register(user)
       localStorage.setItem('ACCESS_TOKEN', response?.data?.token);
-      window.location.href = RoutesEnum.Home
+      navigate(RoutesEnum.Home, { replace: true })
       console.log(errors);
     });
       

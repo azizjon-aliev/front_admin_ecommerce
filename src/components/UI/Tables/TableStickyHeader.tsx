@@ -1,233 +1,182 @@
-import { useState } from 'react';
 import * as React from 'react';
-import { useTheme } from '@mui/material/styles';
-import Box from '@mui/material/Box';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableFooter from '@mui/material/TableFooter';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import IconButton from '@mui/material/IconButton';
-import FirstPageIcon from '@mui/icons-material/FirstPage';
-import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
-import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
-import LastPageIcon from '@mui/icons-material/LastPage';
+import {
+  GridActionsCellItem,
+  GridColDef,
+} from '@mui/x-data-grid';
 import DeleteIcon from '@mui/icons-material/Delete';
-import PreviewIcon from '@mui/icons-material/Preview';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
-import { TableHead } from '@mui/material';
+import { StyledDataGrid } from '../Elements/Styled';
+import EditForm from '../Modals/EditForm';
+import PreviewForm from '../Modals/DetailForm';
+import ConfirmForm from '../Modals/ConfirmForm';
+import { ruRU } from "@mui/x-data-grid";
+import { useFetching } from '../../../hooks/useFetching';
+import useDebounce from '../../../hooks/useDebounce';
+import LinearProgress from '@mui/material/LinearProgress';
 
-import EditForm from '../Modals/EditForm.jsx';
+type RowParams = {
+  id?: number;
+  row: {
+    id: number;
+    status: number;
+  }
+};
 
-interface TablePaginationActionsProps {
-  count: number;
-  page: number;
-  rowsPerPage: number;
-  onPageChange: (
-    event: React.MouseEvent<HTMLButtonElement>,
-    newPage: number,
-  ) => void;
-}
-interface Header {
-  id: string;
-  name: string;
-}
-
-interface Data {
-  data: Array<any>;
-  id: number;
-  name?: string;
-  title?: string;
-  first_name?: string;
-  last_name?: string;
-  middle_name?: string;
-}
-
-interface ExamplePageProps {
-  headers: Array<Header>;
-  data: Array<Data>;
+type Props = {
+  headers: any[];
   service: any;
-}
+  Form: any;
+};
 
-function TablePaginationActions(props: TablePaginationActionsProps,
-  ) {
-  const theme = useTheme();
-  const { count, page, rowsPerPage, onPageChange } = props;
+export default function Table(Props: Props) {
+  // 👇 Add this state to handle the modals
+  const [editModalOpen, setEditModalOpen] = React.useState(false);
+  const [previewModalOpen, setPreviewModalOpen] = React.useState(false);
+  const [confirmModalOpen, setConfirmModalOpen] = React.useState(false);
+  // 👇 Add this state to handle the search input and debounce it
+  const [search, setSearch] = React.useState<string>('');
+  const debouncedSearch = useDebounce(search, 500);
+  // 👇 Add this state to handle the selected row id and the data array
+  const [selectedRow, setSelectedRow] = React.useState<RowParams>({row: {id: 0, status: 0}});
+  const [data, setData] = React.useState<any[]>([]);
 
-  const handleFirstPageButtonClick = (
-    event: React.MouseEvent<HTMLButtonElement>,
-  ) => {
-    onPageChange(event, 0);
-  };
+  // 👇 Add this state to handle the total number of rows
+  const {isLoading, errors, fetching: getAll} = useFetching(async (search: string) => {
+    const response = await Props.service.getAll(search);
+    setData(response.data.data)
+  });
 
-  const handleBackButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    onPageChange(event, page - 1);
-  };
-
-  const handleNextButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    onPageChange(event, page + 1);
-  };
-
-  const handleLastPageButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
-  };
-
-  return (
-    <Box sx={{ flexShrink: 0, ml: 2.5 }}>
-      <IconButton
-        onClick={handleFirstPageButtonClick}
-        disabled={page === 0}
-        aria-label="first page"
-      >
-        {theme.direction === 'rtl' ? <LastPageIcon /> : <FirstPageIcon />}
-      </IconButton>
-      <IconButton
-        onClick={handleBackButtonClick}
-        disabled={page === 0}
-        aria-label="previous page"
-      >
-        {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
-      </IconButton>
-      <IconButton
-        onClick={handleNextButtonClick}
-        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-        aria-label="next page"
-      >
-        {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
-      </IconButton>
-      <IconButton
-        onClick={handleLastPageButtonClick}
-        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-        aria-label="last page"
-      >
-        {theme.direction === 'rtl' ? <FirstPageIcon /> : <LastPageIcon />}
-      </IconButton>
-    </Box>
-  );
-}
+  // 👇 Add this effect to fetch the data on mount and when the limit or search changes
+  React.useEffect(() => {
+      getAll(search);
+  }, [debouncedSearch]);
 
 
+  // 👇 Add this effect to update the counter column when the data changes
+  React.useEffect(() => {
+    if (data.length > 0) {
+      let counter = 1;
+      data.forEach((row) => {
+        row.counter = counter;
+        counter++;
+      });
+    }
+  }, [data]);
 
-export default function ExamplePage(props: ExamplePageProps) {
-  const { headers, data } = props;
-  // Define a state variable to control whether the EditForm component should be displayed
-  const [showEditForm, setShowEditForm] = useState(false);
-  const [selectedDataId, setSelectedDataId] = useState(0);
-
-  // Define event handlers to show/hide the EditForm component
-  const handleOpen = () => setShowEditForm(true);
-  const handleClose = () => setShowEditForm(false);
+  // 👇 Add this function to handle the delete action on the row click event handler below 👇
+  const deleteRow = React.useCallback((rowParams: RowParams) => () => {
+      // @ts-ignore
+      setSelectedRow(rowParams.row);
+      setConfirmModalOpen(true);      
+    }, []
+    );
+    
+  // 👇 Add this function to handle the preview action on the row click event handler below 👇
+  const previewRow = React.useCallback((rowParams: RowParams) => () => {
+    // @ts-ignore
+    setSelectedRow(rowParams.row);
+    setPreviewModalOpen(true);
+  }, []);
   
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  // 👇 Add this function to handle the edit action on the row click event handler below 👇
+  const editRow = React.useCallback((rowParams: RowParams) => () => {
+    // @ts-ignore
+    setSelectedRow(rowParams.row);
+    setEditModalOpen(true); 
+  }, []);
   
-  const handleChangePage = (
-    event: React.MouseEvent<HTMLButtonElement> | null,
-    newPage: number,
-  ) => {
-    setPage(newPage);
-  };
+  
+  // 👇 Add this function to handle the row click event 👇
+  const columns: GridColDef[] = [
+    { field: 'counter', headerName: '№', width: 90 },
+    {field: 'status', headerName: 'Статус', type: 'boolean', width: 150},
+    // map over the headers and return the columns
+    ...Props.headers.map((header) => ({
+      field: header.field,
+      headerName: header.name,
+      width: 150,
+    })),
 
-
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
+    {
+      field: 'actions',
+      type: 'actions',
+      headerName: 'Действия',
+      width: 100,
+      
+      getActions: (params) => [
+        <GridActionsCellItem
+          icon={<VisibilityIcon />}
+          label="Подробнее"
+          title='Подробнее'
+          // @ts-ignore
+          onClick={previewRow(params)}
+        />,
+        <GridActionsCellItem
+        icon={<EditIcon />} 
+        label="Редактировать"
+        // @ts-ignore
+        onClick={editRow(params)}
+        showInMenu
+        />,
+        <GridActionsCellItem
+        icon={<DeleteIcon />}
+        label="Удалить"
+        // @ts-ignore
+        onClick={deleteRow(params.id)}
+        showInMenu
+        />,  
+      ],
+    },
+  ];
+  
+  // 👇 Return the table with the modals 👇
   return (
-    <Box className="table-wrapper">
-   <TableContainer component={Paper} className='table-container'>
+    <div className='table-wrapper'>
+        {/* 👇 Edit Modal */}
+        <Props.Form
+          allCategories={data}
+        />
 
-      <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
-        <TableHead className="table-header">
-            <TableRow className='table-header'>
-              {headers.map((header) => (
-                <TableCell component={'th'} key={header.id} >
-                  {header.name}
-                </TableCell>
-              ))}
-              <TableCell
-                key="actions"
-                className='table-actions'>
-                Actions
-              </TableCell>
-            </TableRow>
-          </TableHead>
-        <TableBody>
+        {/* 👇 Preview Modal */}
+        <PreviewForm 
+            open={previewModalOpen}
+            dataId={selectedRow.id}
+            service={Props.service}
+            handleClose={() => {
+            console.log('close');
+            setPreviewModalOpen(false);
+        }}/>
 
-         {data ? 
-            data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-            <TableRow 
-              key={row?.id} 
-              className='table-row'>
-              <TableCell scope="row">
-                {row?.name || row?.title || (row?.first_name ?? "-") + " " + (row?.last_name ?? "-")}
-              </TableCell>
-              <TableCell
-                key="actions">
-                <IconButton>
-                  <EditIcon 
-                    onClick={() => {
-                      setSelectedDataId(row?.id);
-                      handleOpen();
-                    }
-                    }
-                  />  
-                </IconButton>
-                <IconButton>
-                  <DeleteIcon />
-                </IconButton>
-                <IconButton>
-                  <PreviewIcon />
-                </IconButton>
-              </TableCell>
-            </TableRow>
-          )) 
-          :
-          <TableRow>
-            <TableCell>
-              No data
-            </TableCell>
-          </TableRow>
-          }
+        {/* 👇 Confirm Modal */}
+        <ConfirmForm
+          open={confirmModalOpen}
+          dataId={selectedRow.id}
+          handleClose={() => {
+            console.log('close');
+            setConfirmModalOpen(false);
+          }}
+        />
 
-          {showEditForm && (
-              <EditForm
-                show={showEditForm}
-                handleClose={handleClose}
-                dataId={selectedDataId}
-                service={props.service}
-              />
-          )}
+      {/* 👇 Table  */}
+      <StyledDataGrid
+        localeText={ruRU.components.MuiDataGrid.defaultProps.localeText}
+        checkboxSelection
+        className='table-container'
+        rows={data}
+        columns={columns}
+        slots={{
+          loadingOverlay: LinearProgress,
+        }}
+        onRowSelectionModelChange={(e) => {
+          console.log(e);
 
-          </TableBody>
-        <TableFooter>
-          <TableRow>
-            <TablePagination
-              rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1}]}
-              colSpan={3}
-              count={data.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              SelectProps={{
-                inputProps: {
-                  'aria-label': 'rows per page',
-                },
-                native: true,
-              }}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-              ActionsComponent={TablePaginationActions}
-            />
-          </TableRow>
-        </TableFooter>
-      </Table>
-    </TableContainer>
-    </Box>
-  );
+        }}
+        pageSizeOptions={[10,20,30,50, 100]}
+        loading={data.length === 0}
+        
+      />
+    </div>
+  ) 
+
 }

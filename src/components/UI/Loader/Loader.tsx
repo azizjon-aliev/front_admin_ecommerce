@@ -1,10 +1,12 @@
 import React from 'react';
+// import loader from mui loader here
+import CircularProgress from '@mui/material/CircularProgress';
 
 const Loader = () => {
     return (
-        <h1>
-            Loading...
-        </h1>
+        <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '2rem' }}>
+            <CircularProgress />
+        </div>
     );
 };
 

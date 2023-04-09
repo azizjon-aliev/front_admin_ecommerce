@@ -1,100 +1,123 @@
-import Modal from '@material-ui/core/Modal';
-import { useState, FC, useEffect } from 'react';
-import { Box, Typography } from '@mui/material';
+import * as React from 'react';
+import Button from '@mui/material/Button';
+import { StyledDialog } from '../Elements/Styled';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import { FormProps } from '../../../types/IForm';
 import { useFetching } from '../../../hooks/useFetching';
+import { Loading } from 'mdi-material-ui';
+import Input from '@mui/material/Input';
 
-interface Props {
-  show: boolean;
-  handleClose: () => void;
-  dataId: number;
-  service: any;
-}
+export default function EditForm(
+  props: FormProps
+) {
+  const [data, setData] = React.useState({});
+  const [editData, setEditData] = React.useState({});
+  const [isEditing, setIsEditing] = React.useState(false);
+  const [optionalServices, setOptionalServices] = React.useState<any[]>([]);
 
-const EditForm: FC<Props> = ({ show, handleClose, dataId, service }) => {
-  const [data, setData] = useState<any>([]);
-  
-  const {isLoading, errors, fetching: getDetails} = useFetching(async (limit: number, page: number, search: string) => {
-    const response = await service.getById(limit, page, search);
-    setData(response.data.data);
-  })
+  const { isLoading, errors, fetching: getById } = useFetching(async (id: number) => {
+    const response = await props.service.getById(id);
+    setData(response);
+    setEditData(response);
+  });
 
-  useEffect(() => {
-    const data = getDetails(dataId);
-    // @ts-ignore
-    setData(data)
-  }, [dataId]);
-  
-  // get keys of data
-  const keys = Object.keys(data);
-  // get values of data
-  const values = Object.values(data);
-
-  const handleSave = () => {
-    // Make API request to update data here
-    handleClose();
+  const handleEdit = () => {
+    setIsEditing(true);
   };
 
+  const handleCancel = () => {
+    setIsEditing(false);
+    setEditData(data);
+  };
+
+  const handleSave = () => {
+    setData(editData);
+    setIsEditing(false);
+    props.handleClose();
+  };
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setEditData({ ...editData, [name]: value });
+  };
+
+  const descriptionElementRef = React.useRef<HTMLElement>(null);
+
+  React.useEffect(() => {
+    if (props.open) {
+      const { current: descriptionElement } = descriptionElementRef;
+      if (descriptionElement !== null) {
+        descriptionElement.focus();
+      }
+    }
+  }, [props.open]);
+
+  React.useEffect(() => {
+    if (props.dataId) {
+      getById(props.dataId);
+    }
+  }, [props.dataId]);
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  const keys = Object.keys(data);
+
   return (
-        <Modal  
-          open={show}
-          onClose={handleClose}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
-          <Box 
-            sx={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              width: 'max-content',
-              bgcolor: 'azure',
-              border: '2px solid #f1f1f1',
-              borderRadius: 1, 
-              boxShadow: 24,
-              p: 4,
-            }}
-
-            >
-              <table>
-                <tr>
-                  <td>
-                    <Typography id="modal-modal-title" variant="h6" component="h2">
-                      Edit Form
-                    </Typography>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                      <tr>
-                        {/* map over two arrays keys and values */}
-                        {keys.map((key, index) => (
-                          <td key={index}>
-                            <Typography variant="body1" component="p">
-                              {key}
-                            </Typography>
-                          </td>
-                        ))}
-                      </tr>
-                      <tr>
-                        {values.map((value, index) => (
-                          <td key={index}>
-                            <Typography variant="body1" component="p">
-                              {/* {value
-                                ? (value.title || value.name)
-                                : 'N/A'
-                              } */}
-                            </Typography>
-                          </td>
-                        ))}
-                      </tr>
-                  </td>
-                </tr>
-              </table>
-
-          </Box>
-        </Modal>
+    <div>
+      <StyledDialog
+        open={props.open}
+        onClose={props.handleClose}
+        scroll="paper"
+        aria-labelledby="scroll-dialog-title"
+        aria-describedby="scroll-dialog-description"
+      >
+        <DialogTitle id="scroll-dialog-title">Скроллируемый диалог</DialogTitle>
+        <DialogContent dividers={true}>
+          <DialogContentText id="scroll-dialog-description" ref={descriptionElementRef} tabIndex={-1}>
+            {keys.map((key, index) => {
+              return (
+                <table key={index}
+                  style={{
+                    tableLayout: 'fixed',
+                    width: '90%',
+                  }}
+                >
+                  <tbody>
+                    <tr>
+                      <td>{key}</td>
+                      {isEditing ? (
+                        <td>
+                          {/* @ts-ignore */}
+                          <Input type="text" name={key} value={editData[key]} onChange={handleChange} />
+                        </td>
+                      ) : (
+                        // @ts-ignore
+                        <td>{data[key]}</td>
+                      )}
+                    </tr>
+                  </tbody>
+                </table>
+              );
+            })}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          {isEditing ? (
+            <>
+              <Button onClick={handleCancel}>Отменить</Button>
+              <Button onClick={handleSave}>Сохранить</Button>
+            </>
+          ) : (
+            <Button onClick={handleEdit}>Редактировать</Button>
+          )}
+          <Button onClick={props.handleClose}>Закрыть</Button>
+    </DialogActions>
+  </StyledDialog>
+  </div>
   );
-};
-
-export default EditForm;
+}

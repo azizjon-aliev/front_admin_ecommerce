@@ -1,75 +1,87 @@
-import Modal from '@material-ui/core/Modal';
-import { useState, FC, useEffect } from 'react';
-import { Box, Typography } from '@mui/material';
+import * as React from 'react';
+import Button from '@mui/material/Button';
+import { StyledDialog } from '../Elements/Styled';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import { FormProps } from '../../../types/IForm';
 import { useFetching } from '../../../hooks/useFetching';
+import { Loading } from 'mdi-material-ui';
 
-interface Props {
-  show: boolean;
-  handleClose: () => void;
-  dataId: number;
-  service: any;
-}
+export default function DeatailForm(
+  props: FormProps
+) {
+  const [data, setData] = React.useState([]);
 
-const DetailForm: FC<Props> = ({ show, handleClose, dataId, service }) => {
-  const [data, setData] = useState<any>([]);
-  
-  const {isLoading, errors, fetching: getDetails} = useFetching(async (limit: number, page: number, search: string) => {
-    const response = await service.getById(limit, page, search);
-    setData(response.data.data);
-  })
+  // 👇 Add this state to handle the total number of rows
+  const { isLoading, errors, fetching: getById } = useFetching(async (id: number) => {
+    const response = await props.service.getById(id);
+    
+    setData(response);
 
-  useEffect(() => {
-    const data = getDetails(dataId);
-    // @ts-ignore
-    setData(data)
-  }, [dataId]);
-  
-  const handleSave = () => {
-    // Make API request to update data here
-    handleClose();
-  };
+  });
+
+  const descriptionElementRef = React.useRef<HTMLElement>(null);
+
+  React.useEffect(() => {
+    if (props.open) {
+      const { current: descriptionElement } = descriptionElementRef;
+      if (descriptionElement !== null) {
+        descriptionElement.focus();
+      }
+    }
+  }, [props.open]);
+
+  React.useEffect(() => {
+    if (props.dataId) {
+      getById(props.dataId);
+      console.log(data);
+    }
+  }, [props.dataId]);
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  const keys = Object.keys(data);
 
   return (
-        <Modal  
-          open={show}
-          onClose={handleClose}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
-          <Box 
-            sx={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              width: 400,
-              bgcolor: 'azure',
-              border: '2px solid #f1f1f1',
-              borderRadius: 1, 
-              boxShadow: 24,
-              p: 4,
-            }}
+    <div>
+      <StyledDialog
+        open={props.open}
+        onClose={props.handleClose}
+        scroll="paper"
+        aria-labelledby="scroll-dialog-title"
+        aria-describedby="scroll-dialog-description"
+      >
+        <DialogTitle id="scroll-dialog-title">Скроллируемый диалог</DialogTitle>
+        <DialogContent dividers={true}>
+          <DialogContentText id="scroll-dialog-description" ref={descriptionElementRef} tabIndex={-1}>
+            {/* map over keys of data */}
+            {keys.map((key, index) => {
+              return (
+                <table key={index}
+                  style={{
+                    tableLayout: 'fixed',
+                    width: '90%',
+                  }}
+                >
+                    <tr >
+                      <td>{key}</td>
+                      {/* @ts-ignore */}
+                      <td>{data[key]}</td>
+                    </tr>
+                </table>
+              );
+            })}
 
-            >
-              <table>
-                <tr>
-                  <td>
-                    <Typography id="modal-modal-title" variant="h6" component="h2">
-                      Details
-                    </Typography>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                    </Typography>
-                  </td>
-                </tr>
-              </table>
-
-          </Box>
-        </Modal>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={props.handleClose}>Закрыть</Button>
+        </DialogActions>
+      </StyledDialog>
+    </div>
   );
-};
-
-export default DetailForm;
+}

@@ -3,11 +3,22 @@ import {RoutesEnum} from "../constants/routes";
 
 export class goodService
 {
-    static async getAll(limit: number = 100, page: number = 1, search: string = "")
+    static formatData(data: any) {
+        return {
+            "Название": data.title,
+            "Категория": data.category?.title,
+            "Описание": data.description,
+            "Место": data.place?.name,
+            "Создано": data.created_at.slice(0, 10),
+            "Обновлено": data.updated_at.slice(0, 10),
+            "Статус": data.status ? "Активен" : "Неактивен",
+        }
+    }
+
+    static async getAll(search: string = "")
     {
-        const response = axiosClient.get(RoutesEnum.Good, {
+        const response = await axiosClient.get(RoutesEnum.Good, {
             params: {
-                limit: limit,
                 search: search ? search : undefined,
             }
         })
@@ -15,22 +26,23 @@ export class goodService
     }
 
     static async getById(id: number) {
-        const response = axiosClient.get(RoutesEnum.Good + "/" + id)
-        return response
+        const response = await axiosClient.get(RoutesEnum.Good + "/" + id)
+        // return this.formatData(response.data.data)
+        return this.formatData(response.data.data)
     }
 
     static async create(data: any) {
-        const response = axiosClient.post(RoutesEnum.Good, data)
+        const response = await axiosClient.post(RoutesEnum.Good, data)
         return response
     }
 
     static async update(id: number, data: any) {
-        const response = axiosClient.put(RoutesEnum.Good + "/" + id, data)
+        const response = await axiosClient.put(RoutesEnum.Good + "/" + id, data)
         return response
     }
 
     static async delete(id: number) {
-        const response = axiosClient.delete(RoutesEnum.Good + "/" + id)
+        const response = await axiosClient.delete(RoutesEnum.Good + "/" + id)
         return response
     }
 }

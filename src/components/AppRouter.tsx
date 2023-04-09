@@ -9,10 +9,6 @@ export const AppRouter = () => {
     // @ts-ignore
     const {isAuth, isLoading} = useContext(AuthContext)
 
-    if (isLoading) {
-        return <Loader/>
-    }
-
     return (
         isAuth
             ?
@@ -22,6 +18,7 @@ export const AppRouter = () => {
                         key={route.path}
                         path={route.path}
                         element={<route.element/>
+                        
                     }/>
                 )}
                 <Route path="*" element={<Navigate to={RoutesEnum.Home}/>}/>

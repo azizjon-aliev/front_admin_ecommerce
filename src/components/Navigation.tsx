@@ -12,9 +12,9 @@ import ListItemText from '@mui/material/ListItemText';
 import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography'
+import { Link } from 'react-router-dom';
 
 import { privateRouter } from '../constants/api.router';
-import { Link } from 'react-router-dom';
 
 const drawerWidth = 240;
 
@@ -31,9 +31,9 @@ const ResponsiveDrawer = () => {
         <Divider />
         <List>
           {privateRouter.map((route) => (
-            <ListItemButton key={route.path} href={route.path}>
+            <ListItemButton key={route.path} component={Link} to={route.path}>
               <ListItemIcon>
-                <route.icon />
+                  <route.icon />
               </ListItemIcon>
               <ListItemText primary={route.title} />
             </ListItemButton>
@@ -45,8 +45,7 @@ const ResponsiveDrawer = () => {
   );
 
   return (
-    <Box sx={{ display: 'flex'
-    }}>
+    <Box sx={{ display: 'flex'}}>
       <CssBaseline />
       <AppBar
         position="fixed"
@@ -101,9 +100,7 @@ const ResponsiveDrawer = () => {
           {drawer}
         </Drawer>
       </Box>
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <Toolbar />
-      </Box>
     </Box>
 
   );

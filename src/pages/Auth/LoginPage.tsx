@@ -23,9 +23,6 @@ import MuiFormControlLabel, { FormControlLabelProps } from '@mui/material/FormCo
 import EyeOutline from 'mdi-material-ui/EyeOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 
-// ** Configs
-import themeConfig from '../../configs/themeConfig'
-
 // ** Layout Import
 import BlankLayout from '../../components/UI/@core/layouts/BlankLayout'
 
@@ -127,7 +124,7 @@ const LoginPage = () => {
           </Box>
           <Box sx={{ mb: 6 }}>
             <Typography variant='h5' sx={{ fontWeight: 600, marginBottom: 1.5 }}>
-              Добро пожаловать в {themeConfig.templateName}! 👋🏻
+              Добро пожаловать в IT-LAB 👋🏻
             </Typography>
             <Typography variant='body2'>
               Войдите в свой аккаунт чтобы продолжить работу

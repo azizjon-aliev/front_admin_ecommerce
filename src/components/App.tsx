@@ -1,26 +1,27 @@
 import {AppRouter} from "./AppRouter";
 import Navigation from "./Navigation";
-import React, {useMemo} from "react";
+import React, {useContext } from "react";
+import {AuthContext} from "../context";
 
 
 
 function App() {
-  // const {isAuth, isLoading} = useContext(AuthContext)
+  const {isAuth, isLoading} = useContext(AuthContext)
   
   return (
     <>
+      {
+        isAuth && !isLoading && <Navigation/>
+      }
       <div 
         style={{
           display: 'flex',
-          flexDirection: 'row',
+          justifyContent: 'center',
           alignItems: 'center',
-          height: '100vh',
-          width: '100vw',
-          boxShadow: '0 0 10px 0 rgba(0, 0, 0, 0.1)',
+          overflowY: 'auto',
+          width: '100%',
         }}
-      >
-
-        <Navigation/>
+        >
         <AppRouter />
       </div>
     </>
