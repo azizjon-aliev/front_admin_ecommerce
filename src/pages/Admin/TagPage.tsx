@@ -6,7 +6,7 @@ const TagPage = () => {
     return (
         <div className="table-container">
             <h1>
-                Тэг
+                Тэги
             </h1>
 
             <Table

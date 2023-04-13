@@ -26,12 +26,12 @@ type RowParams = {
 type Props = {
   headers: any[];
   service: any;
-  Form: any;
+  // Form: any;
 };
 
 export default function Table(Props: Props) {
   // 👇 Add this state to handle the modals
-  const [editModalOpen, setEditModalOpen] = React.useState(false);
+  // const [editModalOpen, setEditModalOpen] = React.useState(false);
   const [previewModalOpen, setPreviewModalOpen] = React.useState(false);
   const [confirmModalOpen, setConfirmModalOpen] = React.useState(false);
   // 👇 Add this state to handle the search input and debounce it
@@ -134,9 +134,9 @@ export default function Table(Props: Props) {
   return (
     <div className='table-wrapper'>
         {/* 👇 Edit Modal */}
-        <Props.Form
+        {/* <Props.Form
           allCategories={data}
-        />
+        /> */}
 
         {/* 👇 Preview Modal */}
         <PreviewForm 
@@ -156,6 +156,7 @@ export default function Table(Props: Props) {
             console.log('close');
             setConfirmModalOpen(false);
           }}
+          service={Props.service}
         />
 
       {/* 👇 Table  */}

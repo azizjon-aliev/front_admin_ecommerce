@@ -1,3 +1,4 @@
+import React, { useEffect } from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -7,10 +8,24 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { FormProps } from '../../../types/IForm';
 
 export default function ConfirmForm(
-    props: FormProps
-) {
+  props: FormProps
+) 
+{
+  const [id, setId] = React.useState<number>(0);
 
+  useEffect(() => {
+    if (props.dataId){
+      console.log(props.dataId);
+      setId(props.dataId);
+    }
+  }, [props.dataId]);
 
+  const handleAgree = () => {
+    // Call the service function to remove the model from the table
+    props.service.delete(id);
+    // Close the confirmation dialog
+    props.handleClose();
+  };
 
   return (
     <div>
@@ -21,18 +36,17 @@ export default function ConfirmForm(
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          {"Use Google's location service?"}
+          {"Подтверждение"}
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Let Google help apps determine location. This means sending anonymous
-            location data to Google, even when no apps are running.
+            Вы уверены, что хотите удалить эту запись?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={props.handleClose}>Disagree</Button>
-          <Button onClick={props.handleClose} autoFocus>
-            Agree
+          <Button onClick={handleAgree} autoFocus>
+            Удалить
           </Button>
         </DialogActions>
       </Dialog>

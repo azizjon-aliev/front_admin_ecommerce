@@ -55,27 +55,19 @@ export default function DeatailForm(
         aria-labelledby="scroll-dialog-title"
         aria-describedby="scroll-dialog-description"
       >
-        <DialogTitle id="scroll-dialog-title">Скроллируемый диалог</DialogTitle>
+        <DialogTitle id="scroll-dialog-title">Информация</DialogTitle>
         <DialogContent dividers={true}>
           <DialogContentText id="scroll-dialog-description" ref={descriptionElementRef} tabIndex={-1}>
             {/* map over keys of data */}
             {keys.map((key, index) => {
               return (
-                <table key={index}
-                  style={{
-                    tableLayout: 'fixed',
-                    width: '90%',
-                  }}
-                >
-                    <tr >
+                    <tr key={index}>
                       <td>{key}</td>
                       {/* @ts-ignore */}
                       <td>{data[key]}</td>
                     </tr>
-                </table>
               );
             })}
-
           </DialogContentText>
         </DialogContent>
         <DialogActions>

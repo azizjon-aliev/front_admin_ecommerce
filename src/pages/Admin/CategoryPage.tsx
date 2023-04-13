@@ -22,7 +22,7 @@ const CategoryPage = () => {
                         field: 'title',
                     }
                 ]}
-                Form={EditCategoryForm}
+                // Form={EditCategoryForm}
             />
 
             {/* {errors && <h1>{errors?.message}</h1>} */}
