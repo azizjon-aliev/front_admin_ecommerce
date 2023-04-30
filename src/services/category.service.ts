@@ -1,5 +1,6 @@
 import axiosClient from "../utils/axiosClient";
 import {RoutesEnum} from "../constants/routes";
+import { Field } from "../utils/DynamicForm";
 
 export class categoryService
 {   
@@ -26,6 +27,18 @@ export class categoryService
         } else {
             return result
         }
+    }
+    static getFields = (): Field[] => {
+        const fields: Field[] = [
+            {
+                name: "name",
+                label: "Имя",
+                type: "text",
+                placeholder: "Введите имя",
+                required: true,
+            }
+        ]
+        return fields;
     }
 
     static async getAll(search: string = "")
