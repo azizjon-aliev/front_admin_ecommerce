@@ -43,9 +43,13 @@ export default function Table(Props: Props) {
 
   // 👇 Add this state to handle the total number of rows
   const {isLoading, errors, fetching: getAll} = useFetching(async (search: string) => {
+    await getData(search);
+  });
+
+  const getData = async (search: string) => {
     const response = await Props.service.getAll(search);
     setData(response.data.data)
-  });
+  }
 
   // 👇 Add this effect to fetch the data on mount and when the limit or search changes
   React.useEffect(() => {
@@ -67,7 +71,7 @@ export default function Table(Props: Props) {
   // 👇 Add this function to handle the delete action on the row click event handler below 👇
   const deleteRow = React.useCallback((rowParams: RowParams) => () => {
       // @ts-ignore
-      setSelectedRow(rowParams.row);
+      setSelectedRow(rowParams);
       setConfirmModalOpen(true);      
     }, []
     );
@@ -89,15 +93,15 @@ export default function Table(Props: Props) {
   
   // 👇 Add this function to handle the row click event 👇
   const columns: GridColDef[] = [
-    { field: 'counter', headerName: '№', width: 90 },
-    {field: 'status', headerName: 'Статус', type: 'boolean', width: 150},
+    { field: 'counter', headerName: '№', width: 10 },
     // map over the headers and return the columns
     ...Props.headers.map((header) => ({
       field: header.field,
       headerName: header.name,
       width: 150,
     })),
-
+    
+    {field: 'status', headerName: 'Статус', type: 'boolean', width: 150},
     {
       field: 'actions',
       type: 'actions',
@@ -151,12 +155,13 @@ export default function Table(Props: Props) {
         {/* 👇 Confirm Modal */}
         <ConfirmForm
           open={confirmModalOpen}
-          dataId={selectedRow.id}
+          dataId={selectedRow}
           handleClose={() => {
             console.log('close');
             setConfirmModalOpen(false);
           }}
           service={Props.service}
+          confirm={getData}
         />
 
       {/* 👇 Table  */}

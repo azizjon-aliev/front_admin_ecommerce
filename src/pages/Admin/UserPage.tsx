@@ -13,12 +13,16 @@ const UserPage = () => {
                 service={userService}
                 headers={[
                     {
-                        name: 'Имя',
-                        field: 'first_name',
+                        name: 'ФИО',
+                        field: 'fullName',
                     },
                     {
-                        name: 'Фамилия',
-                        field: 'last_name',
+                        name: 'Номер телефона',
+                        field: 'phoneNumber',
+                    },
+                    {
+                        name: 'Роль',
+                        field: 'role'
                     }
                 ]}
             />

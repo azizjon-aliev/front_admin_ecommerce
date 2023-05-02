@@ -27,13 +27,11 @@ const CategoryPage = () => {
     return (
     <>
         <div className="table-container">
-
-            <h1>
-                Категории   
-            </h1>
-            <Grid marginBottom={2} item justifyContent="start" xs={4}>
-                <Button onClick={() => setIsOpen(true)} variant='contained'>Добавить</Button>
-            </Grid>
+            <div>
+                <h1>
+                    Категории   
+                </h1>
+            </div>
             <Table
                 service={categoryService}
                 headers={[

@@ -5,5 +5,5 @@ export interface FormProps {
     service: any;
     fields?: any;
     options?: any;
-    allCategories?: any[];
+    confirm?: (search: string) => Promise<void>;
 }

@@ -63,21 +63,17 @@ code[class*='language-'] {
 
 
 .table-wrapper {
-  width: 77%;
-  height: 90vh;
+  height: calc(100vh - 160px);
   display: flex;
-  /* flex-direction: column; */
   overflow-y: auto;
   margin-left: auto;
 }
 
 .table-container {
-  height: 100vh;
-  display: flex;
-  text-align: center;
+  height: calc(100vh - 160px);
   flex-direction: column;
   width: 100%;
-  margin-left: auto;
+  margin-right: 30px;
 }
 
 td{
@@ -103,6 +99,11 @@ td{
   align-items: center;
   width: 100%;
   padding: 0 1rem;
+}
+
+h1 {
+  margin: 0px;
+  margin-bottom: 12px;
 }
 
 /* move toolbar filter */

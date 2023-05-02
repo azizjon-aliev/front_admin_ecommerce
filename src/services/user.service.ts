@@ -22,7 +22,10 @@ export class userService
                 search: search ? search : undefined,
             }
         })
-        return response
+        
+        const users = mapping(response)
+        
+        return users;
     }
 
     static async getById(id: number) {
@@ -40,8 +43,25 @@ export class userService
         return response
     }
 
-    static async delete(id: number) {
-        const response = await axiosClient.delete(RoutesEnum.User + "/" + id)
-        return response
+}
+
+function mapping(response: any) {
+    const users = response.data.data.map((user: any )=> {
+        return {
+            id: user.id,
+            fullName: `${user.first_name} ${user.last_name}`,
+            status: user.status,
+            counter: user.counter,
+            image: user.image,
+            middle_name: user.middle_name
+        }
+    })
+
+    const data = {
+        data: {
+            data: users
+        }
     }
+
+    return data;
 }

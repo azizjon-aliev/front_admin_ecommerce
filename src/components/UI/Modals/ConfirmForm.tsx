@@ -23,6 +23,9 @@ export default function ConfirmForm(
   const handleAgree = () => {
     // Call the service function to remove the model from the table
     props.service.delete(id);
+    if(props.confirm){
+      props.confirm("");
+    }
     // Close the confirmation dialog
     props.handleClose();
   };

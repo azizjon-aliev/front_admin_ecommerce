@@ -69,11 +69,7 @@ function App() {
       }
       <div 
         style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          overflowY: 'auto',
-          width: '100%',
+          marginLeft: '275px'
         }}
         >
         <AppRouter />
