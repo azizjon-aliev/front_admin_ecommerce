@@ -14,6 +14,10 @@ import { ruRU } from "@mui/x-data-grid";
 import { useFetching } from '../../../hooks/useFetching';
 import useDebounce from '../../../hooks/useDebounce';
 import LinearProgress from '@mui/material/LinearProgress';
+import TypeSearch from '../Input/SearchInput';
+import { FormControl, InputAdornment, TextField, createStyles, makeStyles } from '@mui/material';
+import SearchIcon from "@material-ui/icons/Search";
+import ClearIcon from "@material-ui/icons/Clear";
 
 type RowParams = {
   id?: number;
@@ -29,6 +33,7 @@ type Props = {
   // Form: any;
 };
 
+
 export default function Table(Props: Props) {
   // 👇 Add this state to handle the modals
   // const [editModalOpen, setEditModalOpen] = React.useState(false);
@@ -36,6 +41,7 @@ export default function Table(Props: Props) {
   const [confirmModalOpen, setConfirmModalOpen] = React.useState(false);
   // 👇 Add this state to handle the search input and debounce it
   const [search, setSearch] = React.useState<string>('');
+  const [showClearIcon, setShowClearIcon] = React.useState("none");
   const debouncedSearch = useDebounce(search, 500);
   // 👇 Add this state to handle the selected row id and the data array
   const [selectedRow, setSelectedRow] = React.useState<RowParams>({row: {id: 0, status: 0}});
@@ -90,6 +96,20 @@ export default function Table(Props: Props) {
     setEditModalOpen(true); 
   }, []);
   
+  const handleClick = (): void => {
+    // TODO: Clear the search input
+    console.log("clicked the clear icon...");
+    setSearch("");
+    setShowClearIcon("none");
+  };
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    setShowClearIcon(event.target.value === "" ? "none" : "flex");
+    setSearch(event.target.value);
+    setTimeout(() => {
+      getData(search)
+    }, 500);
+  };
   
   // 👇 Add this function to handle the row click event 👇
   const columns: GridColDef[] = [
@@ -136,53 +156,82 @@ export default function Table(Props: Props) {
   
   // 👇 Return the table with the modals 👇
   return (
-    <div className='table-wrapper'>
-        {/* 👇 Edit Modal */}
-        {/* <Props.Form
-          allCategories={data}
-        /> */}
-
-        {/* 👇 Preview Modal */}
-        <PreviewForm 
-            open={previewModalOpen}
-            dataId={selectedRow.id}
-            service={Props.service}
-            handleClose={() => {
-            console.log('close');
-            setPreviewModalOpen(false);
-        }}/>
-
-        {/* 👇 Confirm Modal */}
-        <ConfirmForm
-          open={confirmModalOpen}
-          dataId={selectedRow}
-          handleClose={() => {
-            console.log('close');
-            setConfirmModalOpen(false);
+    <>
+      <FormControl style={{
+        margin: "0",
+        marginBottom: "1rem"
+      }}>
+        <TextField
+          size="small"
+          variant="outlined"
+          onChange={handleChange}
+          value={search}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+            endAdornment: (
+              <InputAdornment
+                position="end"
+                style={{ display: showClearIcon }}
+                onClick={handleClick}
+              >
+                <ClearIcon />
+              </InputAdornment>
+            )
           }}
-          service={Props.service}
-          confirm={getData}
         />
+      </FormControl>
+      <div className='table-wrapper'>
+          {/* 👇 Edit Modal */}
+          {/* <Props.Form
+            allCategories={data}
+          /> */}
 
-      {/* 👇 Table  */}
-      <StyledDataGrid
-        localeText={ruRU.components.MuiDataGrid.defaultProps.localeText}
-        checkboxSelection
-        className='table-container'
-        rows={data}
-        columns={columns}
-        slots={{
-          loadingOverlay: LinearProgress,
-        }}
-        onRowSelectionModelChange={(e) => {
-          console.log(e);
+          {/* 👇 Preview Modal */}
+          <PreviewForm 
+              open={previewModalOpen}
+              dataId={selectedRow.id}
+              service={Props.service}
+              handleClose={() => {
+              console.log('close');
+              setPreviewModalOpen(false);
+          }}/>
 
-        }}
-        pageSizeOptions={[10,20,30,50, 100]}
-        loading={data.length === 0}
-        
-      />
-    </div>
+          {/* 👇 Confirm Modal */}
+          <ConfirmForm
+            open={confirmModalOpen}
+            dataId={selectedRow}
+            handleClose={() => {
+              console.log('close');
+              setConfirmModalOpen(false);
+            }}
+            service={Props.service}
+            confirm={getData}
+          />
+
+        {/* 👇 Table  */}
+        <StyledDataGrid
+          localeText={ruRU.components.MuiDataGrid.defaultProps.localeText}
+          checkboxSelection
+          className='table-container'
+          rows={data}
+          columns={columns}
+          slots={{
+            loadingOverlay: LinearProgress,
+          }}
+          onRowSelectionModelChange={(e) => {
+            console.log(e);
+
+          }}
+          pageSizeOptions={[10,20,30,50, 100]}
+          loading={data.length === 0}
+          
+        />
+      </div>
+    </>
   ) 
 
 }
