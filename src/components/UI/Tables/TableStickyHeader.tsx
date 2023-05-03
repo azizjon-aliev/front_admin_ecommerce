@@ -108,7 +108,7 @@ export default function Table(Props: Props) {
     setSearch(event.target.value);
     setTimeout(() => {
       getData(search)
-    }, 500);
+    }, 300);
   };
   
   // 👇 Add this function to handle the row click event 👇
