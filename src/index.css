@@ -63,14 +63,14 @@ code[class*='language-'] {
 
 
 .table-wrapper {
-  height: calc(100vh - 160px);
+  height: calc(100vh - 200px);
   display: flex;
   overflow-y: auto;
   margin-left: auto;
 }
 
 .table-container {
-  height: calc(100vh - 160px);
+  height: calc(100vh - 200px);
   flex-direction: column;
   width: 100%;
   margin-right: 30px;
